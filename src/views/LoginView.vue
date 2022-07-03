@@ -33,30 +33,6 @@
       </div>
     </form>
   </ValidationObserver>
-  <!--  <div>-->
-  <!--    <h1>LeadHit</h1>-->
-  <!--    <v-form v-model="valid"-->
-  <!--            @submit="checkForm">-->
-  <!--      <v-container>-->
-  <!--        <v-text-field-->
-  <!--            class="id-field"-->
-  <!--            v-model="idInput"-->
-  <!--            :rules="idRules"-->
-  <!--            :counter="24"-->
-  <!--            label="ID"-->
-  <!--            required-->
-  <!--        ></v-text-field>-->
-  <!--        <v-btn-->
-  <!--            type="submit"-->
-  <!--            color="blue"-->
-  <!--            @click="login"-->
-  <!--            :disabled="!valid"-->
-  <!--        >-->
-  <!--          Login-->
-  <!--        </v-btn>-->
-  <!--      </v-container>-->
-  <!--    </v-form>-->
-  <!--  </div>-->
 </template>
 <script>
 import {extend, ValidationObserver, ValidationProvider} from 'vee-validate'
