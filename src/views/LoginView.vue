@@ -1,51 +1,87 @@
 <template>
-  <div>
-    <h1>LeadHit</h1>
-    <v-form v-model="valid"
-            @submit="checkForm">
-      <v-container>
+  <ValidationObserver
+      ref="observer"
+      v-slot="{ invalid, validate }"
+  >
+    <form @submit.prevent="validate().then(submit)">
+      <ValidationProvider
+          v-slot="{ errors }"
+          name="Site ID"
+          rules="count:24"
+      >
         <v-text-field
             class="id-field"
             v-model="idInput"
-            :rules="idRules"
             :counter="24"
+            :error-messages="errors"
             label="ID"
             required
+            maxlength="24"
         ></v-text-field>
+      </ValidationProvider>
+
+      <div class="btn-container">
         <v-btn
             type="submit"
-            color="blue"
-            @click="login"
-            :disabled="!valid"
+            :disabled="invalid"
         >
-          Login
+          submit
         </v-btn>
-      </v-container>
-    </v-form>
-  </div>
+        <v-btn @click="clear">
+          clear
+        </v-btn>
+      </div>
+    </form>
+  </ValidationObserver>
+  <!--  <div>-->
+  <!--    <h1>LeadHit</h1>-->
+  <!--    <v-form v-model="valid"-->
+  <!--            @submit="checkForm">-->
+  <!--      <v-container>-->
+  <!--        <v-text-field-->
+  <!--            class="id-field"-->
+  <!--            v-model="idInput"-->
+  <!--            :rules="idRules"-->
+  <!--            :counter="24"-->
+  <!--            label="ID"-->
+  <!--            required-->
+  <!--        ></v-text-field>-->
+  <!--        <v-btn-->
+  <!--            type="submit"-->
+  <!--            color="blue"-->
+  <!--            @click="login"-->
+  <!--            :disabled="!valid"-->
+  <!--        >-->
+  <!--          Login-->
+  <!--        </v-btn>-->
+  <!--      </v-container>-->
+  <!--    </v-form>-->
+  <!--  </div>-->
 </template>
-
 <script>
-import axios from 'axios'
+import {extend, ValidationObserver, ValidationProvider} from 'vee-validate'
+import axios from "axios";
+
+extend('count', {
+  validate(value, args) {
+    return value.length >= args.length;
+  },
+  params: ['length']
+
+})
 
 export default {
+  components: {
+    ValidationProvider,
+    ValidationObserver,
+  },
   data: () => ({
     valid: false,
-    idInput: '',
-    idRules: [
-      v => v.length > 24 || 'ID must contain 24 characters',
-      v => v.length < 24 || 'ID must contain 24 characters',
-    ],
+    idInput: ''
   }),
+
   methods: {
-    checkForm (e) {
-      if (this.idInput.length === 24) {
-        console.log('ok')
-        return true
-      }
-      e.preventDefault()
-    },
-    login () {
+    submit() {
       if (this.idInput.length === 24) {
         axios
             .get('https://track-api.leadhit.io/client/test_auth', {
@@ -55,21 +91,31 @@ export default {
               }
             })
             .then(response => {
-              // TODO - check response message: ok
-              localStorage.setItem('leadhit-site-id', '5f8475902b0be670555f1bb3')
-              console.log('redirecting')
-              this.$router.push('analytics')
+              if (response.data.message === 'ok') {
+                localStorage.setItem('leadhit-site-id', '5f8475902b0be670555f1bb3')
+                this.$router.push('analytics')
+              }
             })
             .catch(error => console.log(error))
       }
-    }
-  }
-}
-</script>
+    },
+    clear() {
+      this.idInput = ''
+    },
+  },
+
+}</script>
 
 <style>
 .id-field {
   width: 500px;
   margin: 0 auto
+}
+
+.btn-container {
+  margin: 0 auto;
+  width: 300px;
+  display: flex;
+  justify-content: space-around;
 }
 </style>

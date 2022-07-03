@@ -52,6 +52,7 @@ const chartData = [
 export default {
   name: 'HelloWorld',
   mounted() {
+
     let chart = am4core.create(this.$refs.chartdiv, am4charts.XYChart);
     chart.data = chartData;
 
@@ -75,7 +76,6 @@ export default {
 
     this.chart = chart;
   },
-
   beforeDestroy() {
     if (this.chart) {
       this.chart.dispose();
